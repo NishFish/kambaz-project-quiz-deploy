@@ -24,7 +24,7 @@ const quizSchema = new mongoose.Schema({
         type: Map,
         of: Number
       },
-    score: {
+    userAttempts: {
         type: Map,
         of: Number
         },
