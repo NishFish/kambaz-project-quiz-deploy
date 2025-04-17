@@ -6,22 +6,33 @@ const choiceSchema = new mongoose.Schema({
 }, { _id: false });
 
 const questionSchema = new mongoose.Schema({
-  _id: String,
-  name: String, 
+  questionId: String,
   type: {
     type: String,
-    enum: ["MULTIPLE_CHOICE", "FILL_IN_THE_BLANK", "TRUE_FALSE"],
+    enum: ["Multiple Choice", "True/False", "Fill in the Blank"],
     required: true,
   },
-  question: { type: String, required: true }, 
+  name: String,
+  question: { type: String, required: true },
 
+  // Optional fields depending on type
   choices: [choiceSchema],
   blanks: [String],
   isCorrect: Boolean,
 
   points: Number,
 
+  latestAnswers: {
+    type: Map,
+    of: mongoose.Schema.Types.Mixed,
+    default: {},
+  }
+}, { _id: false });
+
+const questionSetSchema = new mongoose.Schema({
+  _id: String,
   quiz: { type: String, ref: "QuizModel" },
+  questions: [questionSchema],
 }, { collection: "questions" });
 
-export default questionSchema;
+export default questionSetSchema;
