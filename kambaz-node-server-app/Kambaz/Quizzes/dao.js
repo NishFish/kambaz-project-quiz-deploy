@@ -1,24 +1,24 @@
 import model from "./model.js";
 import { v4 as uuidv4 } from 'uuid';
 
-export const createQuiz = (quiz) => {
-    const newQuiz = { ...quiz, _id: uuidv4() };
-    return model.create(newQuiz);
+export function findQuizzesForCourse(courseId) {
+  return model.find({ course: courseId });
 }
-
-export const deleteQuiz = (quizId) => model.deleteOne({ _id: quizId });
-export const findAllQuizzesFromCourse = (courseId) => model.find({ course: courseId });
-export const findQuizById = (quizId) => model.findOne({ _id: quizId });
-export const updateQuiz = (quizId, quizUpdates) => model.updateOne({ _id: quizId }, { $set: quizUpdates });
-export const togglePublishQuiz = async (quizId) => {
-    const quiz = await model.findById(quizId);
-    if (!quiz) throw new Error("Quiz not found");
-  
-    const currentStatus = quiz.published === "true";
-    const newStatus = !currentStatus;
-  
-    return model.updateOne(
-      { _id: quizId },
-      { $set: { published: newStatus.toString() } }
-    );
-  };
+export function createQuiz(quiz) {
+  const newQuiz = { ...quiz, _id: uuidv4() };
+  return model.create(newQuiz);
+}
+export function deleteQuiz(quizId) {
+  return model.deleteOne({ _id: quizId });
+}
+export function updateQuiz(quizId, quizUpdates) {
+  return model.updateOne({ _id: quizId }, quizUpdates);
+}
+export function togglePublishQuiz(quizId) {
+  const quiz = model.findById(quizId);
+  const newPublished = quiz.published === "true" ? "false" : "true";
+  return model.findByIdAndUpdate(
+    quizId,
+    { $set: { published: newPublished } },
+  );
+}
