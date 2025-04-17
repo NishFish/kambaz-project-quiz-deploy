@@ -1,6 +1,5 @@
 import * as dao from "./dao.js";
 import * as questionDao from "../QuizQuestions/dao.js";
-import * as answerDao from "../QuizAnswers/dao.js";
 
 export default function QuizRoutes(app) {
   app.put("/api/quizzes/:quizId", async (req, res) => {
