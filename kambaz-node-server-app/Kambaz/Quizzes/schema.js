@@ -24,6 +24,10 @@ const quizSchema = new mongoose.Schema({
         type: Map,
         of: Number
       },
+    score: {
+        type: Map,
+        of: Number
+        },
     course: { type: String, ref: "CourseModel" },
 
 },
