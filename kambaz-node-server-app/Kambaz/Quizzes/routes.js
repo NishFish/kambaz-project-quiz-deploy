@@ -1,6 +1,5 @@
 import * as dao from "./dao.js";
 import * as questionDao from "../QuizQuestions/dao.js";
-import * as answerDao from "../QuizAnswers/dao.js"; // ✅ Add this
 
 export default function QuizRoutes(app) {
   // --- Quiz Routes ---
@@ -47,24 +46,24 @@ export default function QuizRoutes(app) {
   
   app.put("/api/quizzes/:qid/toggle-publish", togglePublishQuiz);
 
-  // --- Question Routes ---
+  // --- Question Routes within Quizzes ---
+  const getQuestionSet = async (req, res) => {
+    const questionSet = await questionDao.findQuestionSetByQuizId(req.params.qid);
+    res.json(questionSet);
+  };
+  app.get("/api/quizzes/:qid/questions", getQuestionSet);
+
   const createQuestion = async (req, res) => {
     const newQuestion = await questionDao.createQuestion(req.body);
     res.json(newQuestion);
   };
-  app.post("/api/questions", createQuestion);
+  app.post("/api/quizzes/:qid/questions", createQuestion);
 
-  const findQuestionById = async (req, res) => {
-    const question = await questionDao.findQuestionById(req.params.qid);
-    res.json(question);
+  const updateQuestion = async (req, res) => {
+    const status = await questionDao.updateQuestion(req.params.qid, req.body);
+    res.json(status);
   };
-  app.get("/api/questions/:qid", findQuestionById);
-
-  const findQuestionsByQuizId = async (req, res) => {
-    const questions = await questionDao.findQuestionsByQuizId(req.params.quizId);
-    res.json(questions);
-  };
-  app.get("/api/quizzes/:quizId/questions", findQuestionsByQuizId);
+  app.put("/api/questions/:qid", updateQuestion);
 
   const deleteQuestion = async (req, res) => {
     const status = await questionDao.deleteQuestion(req.params.qid);
@@ -72,31 +71,14 @@ export default function QuizRoutes(app) {
   };
   app.delete("/api/questions/:qid", deleteQuestion);
 
-  const updateQuestion = async (req, res) => {
-    console.log(
-      "here"
-    )
-    const status = await questionDao.updateQuestion(req.params.qid, req.body);
-    res.json(status);
+  const getQuestionById = async (req, res) => {
+    const question = await questionDao.findQuestionById(req.params.qid);
+    if (question) {
+      res.json(question);
+    } else {
+      res.status(404).json({ error: "Question not found" });
+    }
   };
-  app.put("/api/questions/:qid", updateQuestion);
+  app.get("/api/questions/:qid", getQuestionById);
 
-  // --- Answer Routes ---
-  const createAnswer = async (req, res) => {
-    const newAnswer = await answerDao.createAnswer(req.body);
-    res.json(newAnswer);
-  };
-  app.post("/api/answers", createAnswer);
-
-  const getAnswerById = async (req, res) => {
-    const answer = await answerDao.getAnswerById(req.params.aid);
-    res.json(answer);
-  };
-  app.get("/api/answers/:aid", getAnswerById);
-
-  const getAnswersByQuizId = async (req, res) => {
-    const answers = await answerDao.getAnswerByQuizId(req.params.qid);
-    res.json(answers);
-  };
-  app.get("/api/quizzes/:qid/answers", getAnswersByQuizId);
 }
