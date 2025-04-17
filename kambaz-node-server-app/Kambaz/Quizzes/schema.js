@@ -19,7 +19,7 @@ const quizSchema = new mongoose.Schema({
     availableDate: String,
     untilDate: String,
     published: String,
-    score: Number,
+    score: {},
     course: { type: String, ref: "CourseModel" },
 
 },
