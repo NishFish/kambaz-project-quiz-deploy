@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const quizSchema = new mongoose.Schema({
     _id: String,
     title: String,
@@ -19,7 +20,10 @@ const quizSchema = new mongoose.Schema({
     availableDate: String,
     untilDate: String,
     published: String,
-    score: {},
+    score: {
+        type: Map,
+        of: Number
+      },
     course: { type: String, ref: "CourseModel" },
 
 },
