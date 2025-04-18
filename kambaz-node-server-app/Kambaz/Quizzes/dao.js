@@ -22,3 +22,12 @@ export function togglePublishQuiz(quizId) {
     { $set: { published: newPublished } },
   );
 }
+export function updateQuizScore(quizId, username, newScore) {
+  return model.updateOne(
+    { _id: quizId },
+    {
+      $push: { [`score.${username}`]: newScore },
+      $inc: { [`userAttempts.${username}`]: 1 },
+    }
+  );
+}

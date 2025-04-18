@@ -14,11 +14,13 @@ export function deleteQuestion(questionId) {
 export function updateQuestion(questionId, questionUpdates) {
   return model.updateOne({ _id: questionId }, questionUpdates);
 }
-export function updateQuestionScore(questionId, username, newScore) {
+export function recordAnswer(questionSetId, questionId, userId, answer) {
   return model.updateOne(
-    { _id: questionId },
+    { _id: questionSetId, "questions.id": questionId },
     {
-      $push: { [`score.${username}`]: newScore },
+      $set: {
+        [`questions.$.latestAnswers.${userId}`]: answer
+      }
     }
   );
 }

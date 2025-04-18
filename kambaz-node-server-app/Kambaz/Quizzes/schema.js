@@ -21,11 +21,20 @@ const quizSchema = new mongoose.Schema({
     availableDate: String,
     availableUntilDate: String,
     published: String,
-    score: {},
-    userAttempts: {},
-},
-    {
-        collection: "quizzes"
-    });
+    score: {
+        type: Map,
+        of: [Number],
+        default: {}
+    },
+    userAttempts: {
+        type: Map,
+        of: Number,
+        default: {}
+    }
+}, {
+    collection: "quizzes",
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
 
 export default quizSchema;

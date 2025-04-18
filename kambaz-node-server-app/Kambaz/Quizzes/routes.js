@@ -29,5 +29,12 @@ export default function QuizRoutes(app) {
     const newQuestion = await questionDao.createQuestion(question);
     res.send(newQuestion);
   });
+  app.put("/api/quizzes/:quizId/score", async (req, res) => {
+    const { quizId } = req.params;
+    const { username, newScore } = req.body;
+    const result = await dao.updateQuizScore(quizId, username, newScore);
+    res.json(result);
+  });
+
 
 }
