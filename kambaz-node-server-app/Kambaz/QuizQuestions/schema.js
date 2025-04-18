@@ -6,7 +6,7 @@ const choiceSchema = new mongoose.Schema({
 }, { _id: false });
 
 const questionSchema = new mongoose.Schema({
-  questionId: String,
+  id: String,
   type: {
     type: String,
     enum: ["Multiple Choice", "True/False", "Fill in the Blank"],

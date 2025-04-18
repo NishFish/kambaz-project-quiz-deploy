@@ -2,20 +2,20 @@ import model from "./model.js";
 import { v4 as uuidv4 } from "uuid";
 
 // Create a new question and add it to the question set
-export const createQuestion = async (question) => {
+export const createQuestion = async (quizId, question) => {
   const newQuestion = {
     ...question,
-    questionId: question.questionId || uuidv4(),
+    id: question.id || uuidv4(),
   };
 
-  const existingSet = await model.findOne({ _id: question._id });
+  const existingSet = await model.findOne({ quiz: quizId });
   if (existingSet) {
     existingSet.questions.push(newQuestion);
     return existingSet.save();
   } else {
     // Create a new question set if it doesn't exist
     return model.create({
-      _id: question._id,
+      _id: uuidv4(),
       quiz: question.quiz,
       questions: [newQuestion],
     });
@@ -28,9 +28,9 @@ export const findQuestionSetByQuizId = async (quizId) => {
 
 // Find a specific question by questionId across all sets
 export const findQuestionById = async (qid) => {
-  const result = await model.findOne({ "questions.questionId": qid });
+  const result = await model.findOne({ "questions.id": qid });
   if (!result) return null;
-  return result.questions.find(q => q.questionId === qid);
+  return result.questions.find(q => q.id === qid);
 };
 
 // Get all questions for a specific quiz
@@ -41,23 +41,33 @@ export const findQuestionsByQuizId = async (quizId) => {
 
 // Delete a question from a set by questionId
 export const deleteQuestion = async (qid) => {
+  
   return model.updateOne(
-    { "questions.questionId": qid },
-    { $pull: { questions: { questionId: qid } } }
+    { "questions.id": qid },
+    { $pull: { questions: { id: qid } } }
   );
 };
 
 // Update a question by questionId
-export const updateQuestion = async (qid, questionUpdates) => {
+export const updateQuestion = async (questionUpdates) => {
+  console.log(questionUpdates.id)
   return model.updateOne(
-    { "questions.questionId": qid },
+    { "questions.id": questionUpdates.id },
     {
       $set: {
         "questions.$": {
           ...questionUpdates,
-          questionId: qid, // ensure this stays consistent
+          id: questionUpdates.id, 
         }
       }
     }
+  );
+};
+
+export const updateQuestionSet = async (quizId, newQuestions) => {
+  return model.findOneAndUpdate(
+    { quiz: quizId },
+    { $set: { questions: newQuestions } },
+    { new: true, upsert: true } 
   );
 };

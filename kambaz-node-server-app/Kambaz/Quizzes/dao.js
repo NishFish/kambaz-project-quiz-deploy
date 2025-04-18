@@ -2,6 +2,7 @@ import model from "./model.js";
 import { v4 as uuidv4 } from 'uuid';
 
 export function findQuizzesForCourse(courseId) {
+  console.log(courseId);
   return model.find({ course: courseId });
 }
 export function createQuiz(quiz) {
@@ -21,4 +22,8 @@ export function togglePublishQuiz(quizId) {
     quizId,
     { $set: { published: newPublished } },
   );
+}
+
+export function findQuizById(quizId) {
+  return model.findById(quizId);
 }
