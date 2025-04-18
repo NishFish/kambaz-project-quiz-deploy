@@ -1,38 +1,29 @@
 import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-const choiceSchema = new mongoose.Schema({
-  text: String,
-  isCorrect: Boolean,
+const choiceSchema = new Schema({
+  text: { type: String, required: true },
+  isCorrect: { type: Boolean, required: true }
 }, { _id: false });
 
-const questionSchema = new mongoose.Schema({
-  questionId: String,
-  type: {
-    type: String,
-    enum: ["Multiple Choice", "True/False", "Fill in the Blank"],
-    required: true,
-  },
-  name: String,
+const questionSchema = new Schema({
+  id: { type: String, required: true },
+  type: { type: String, enum: ["Multiple Choice", "True/False", "Fill in the Blank"], required: true },
+  name: { type: String, required: true },
   question: { type: String, required: true },
-
-  // Optional fields depending on type
-  choices: [choiceSchema],
-  blanks: [String],
-  isCorrect: Boolean,
-
-  points: Number,
-
-  latestAnswers: {
-    type: Map,
-    of: mongoose.Schema.Types.Mixed,
-    default: {},
-  }
+  choices: { type: [choiceSchema], default: undefined },
+  blanks: { type: [String], default: undefined },
+  isCorrect: { type: Boolean, default: undefined },
+  points: { type: Number, required: true },
+  latestAnswers: { type: Map, of: Schema.Types.Mixed, default: {} }
 }, { _id: false });
 
-const questionSetSchema = new mongoose.Schema({
-  _id: String,
-  quiz: { type: String, ref: "QuizModel" },
-  questions: [questionSchema],
-}, { collection: "questions" });
+const questionSetSchema = new Schema({
+  _id: { type: String, required: true },
+  quiz: { type: String, ref: "QuizModel", required: true },
+  questions: { type: [questionSchema], default: [] }
+}, {
+  collection: "questions"
+});
 
 export default questionSetSchema;
