@@ -13,4 +13,11 @@ export default function QuestionRoutes(app) {
         const status = await dao.deleteQuestion(questionId);
         res.send(status);
     });
+
+    app.put("/api/questions/:questionId", async (req, res) => {
+        const { questionId } = req.params;
+        const { username, newScore } = req.body
+        const status = await dao.updateQuestionScore(questionId, username, newScore);
+        res.send(status);
+    });
 }
