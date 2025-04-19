@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const quizSchema = new mongoose.Schema({
     _id: String,
+    course: { type: String, ref: "CourseModel" },
     title: String,
     quizType: String,
     assignmentGroup: String,
@@ -18,19 +19,14 @@ const quizSchema = new mongoose.Schema({
     lockQuestionsAfterAnswering: String,
     dueDate: String,
     availableDate: String,
-    untilDate: String,
+    availableUntilDate: String,
     published: String,
-    score: {
-        type: Map,
-        of: Number
-      },
-    userAttempts: {
-        type: Map,
-        of: Number
-        },
-    course: { type: String, ref: "CourseModel" },
+    score: {},
+    userAttempts: {},
 
 },
-    { collection: "quizzes" }
-);
+    {
+        collection: "quizzes"
+    });
+
 export default quizSchema;

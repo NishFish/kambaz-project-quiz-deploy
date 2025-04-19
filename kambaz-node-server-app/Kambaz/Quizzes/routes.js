@@ -2,7 +2,6 @@ import * as dao from "./dao.js";
 import * as questionDao from "../QuizQuestions/dao.js";
 
 export default function QuizRoutes(app) {
-  // --- Quiz Routes ---
   const createQuiz = async (req, res) => {
     const newQuiz = await dao.createQuiz(req.body);
     res.json(newQuiz);
@@ -43,10 +42,10 @@ export default function QuizRoutes(app) {
       res.status(500).json({ error: error.message });
     }
   };
-  
   app.put("/api/quizzes/:qid/toggle-publish", togglePublishQuiz);
 
-  // --- Question Routes within Quizzes ---
+  
+
   const getQuestionSet = async (req, res) => {
     const questionSet = await questionDao.findQuestionSetByQuizId(req.params.qid);
     res.json(questionSet);
@@ -54,13 +53,14 @@ export default function QuizRoutes(app) {
   app.get("/api/quizzes/:qid/questions", getQuestionSet);
 
   const createQuestion = async (req, res) => {
-    const newQuestion = await questionDao.createQuestion(req.body);
+    const quizId = req.params.qid;
+    const newQuestion = await questionDao.createQuestion(quizId, req.body);
     res.json(newQuestion);
   };
   app.post("/api/quizzes/:qid/questions", createQuestion);
 
   const updateQuestion = async (req, res) => {
-    const status = await questionDao.updateQuestion(req.params.qid, req.body);
+    const status = await questionDao.updateQuestion(req.body);
     res.json(status);
   };
   app.put("/api/questions/:qid", updateQuestion);
@@ -80,5 +80,21 @@ export default function QuizRoutes(app) {
     }
   };
   app.get("/api/questions/:qid", getQuestionById);
+
+  const updateQuestionSet = async (req, res) => {
+    const quizId = req.params.qid;
+    const newQuestions = req.body.questions;
+    try {
+      const updatedSet = await questionDao.updateQuestionSet(quizId, newQuestions);
+      if (updatedSet) {
+        res.json(updatedSet);
+      } else {
+        res.status(404).json({ error: "Question set not found" });
+      }
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+  app.put("/api/quizzes/:qid/questions", updateQuestionSet);
 
 }
