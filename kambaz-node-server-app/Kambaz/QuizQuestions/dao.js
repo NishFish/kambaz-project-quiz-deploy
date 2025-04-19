@@ -106,19 +106,25 @@ export const updateQuestion = async (questionUpdates) => {
 };
 
 export const updateQuestionSet = async (quizId, newQuestions) => {
-  console.log("here")
+  const totalPoints = newQuestions.reduce((sum, q) => sum + (q.points || 0), 0);
+  const totalQuestions = newQuestions.length;
+
+  let updatedSet;
 
   const questionSet = await model.findOne({ quiz: quizId });
-  if (!questionSet) return null;
-
-  const updatedSet = await model.findOneAndUpdate(
-    { quiz: quizId },
-    { $set: { questions: newQuestions } },
-    { new: true, upsert: true, runValidators: true } 
-  );
-
-  const totalPoints = updatedSet.questions.reduce((sum, q) => sum + (q.points || 0), 0);
-  const totalQuestions = updatedSet.questions.length;
+  if (!questionSet) {
+    updatedSet = await model.create({
+      _id: uuidv4(),
+      quiz: quizId,
+      questions: newQuestions,
+    });
+  } else {
+    updatedSet = await model.findOneAndUpdate(
+      { quiz: quizId },
+      { $set: { questions: newQuestions } },
+      { new: true, runValidators: true }
+    );
+  }
 
   await updateQuiz(quizId, {
     points: totalPoints,
@@ -126,5 +132,4 @@ export const updateQuestionSet = async (quizId, newQuestions) => {
   });
 
   return updatedSet;
-
 };
