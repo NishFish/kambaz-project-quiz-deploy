@@ -23,6 +23,7 @@ const quizSchema = new mongoose.Schema({
     published: String,
     score: {},
     userAttempts: {},
+
 },
     {
         collection: "quizzes"
